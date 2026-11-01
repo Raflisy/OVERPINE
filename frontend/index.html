@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050505">
+  <title>OVERPINE — Your device</title>
+  <link rel="icon" type="image/png" href="/images/overpine-mark.png">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <script src="/vendor/chart.umd.min.js" defer></script>
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="OVERPINE home">
+        <img class="brand-mark" src="/images/overpine-mark.png" alt="">
+        <span>overpine</span>
+      </a>
+      <div class="topbar-actions">
+        <div class="connection" role="status" aria-live="polite">
+          <span id="status-indicator" class="status-dot status-dot--checking"></span>
+          <span id="backend-status">Finding this device</span>
+        </div>
+        <button id="restart-admin" class="admin-restart-button" type="button" hidden>Restart as administrator</button>
+        <span id="admin-restart-status" class="admin-restart-status" role="status" aria-live="polite"></span>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to light mode" aria-pressed="true">
+          <span id="theme-toggle-label">Light mode</span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <nav class="primary-nav" aria-label="Main navigation">
+        <a href="#home" data-route-link="home" aria-current="page">Overview</a>
+        <a href="#sensors" data-route-link="sensors">Sensors</a>
+        <a href="#stress" data-route-link="stress">Stress test</a>
+      </nav>
+      <section class="device-hero" data-route-page="home" aria-labelledby="page-title">
+        <div class="device-copy">
+          <p class="eyebrow"><span class="eyebrow-mark"></span> YOUR DEVICE</p>
+          <h1 id="page-title">Finding your computer...</h1>
+          <p class="device-fact">
+            <span class="fact-spark" aria-hidden="true">✳</span>
+            <span id="device-fact">Looking up a little fact about your device...</span>
+          </p>
+          <a id="device-fact-source" class="fact-source" target="_blank" rel="noreferrer" hidden>Source</a>
+          <p class="fact-privacy">Online lookup uses the manufacturer and model only — never your computer name or serial number.</p>
+          <div class="device-meta">
+            <span id="device-manufacturer">Local hardware profile</span>
+            <span class="meta-separator" aria-hidden="true"></span>
+            <span id="device-hostname">Connecting</span>
+          </div>
+        </div>
+        <div class="device-art">
+          <div id="device-logo-gallery" class="device-logo-gallery" aria-label="Device manufacturer and product family logos" hidden>
+            <div id="device-brand-logo-container" class="device-logo-container" hidden>
+              <img id="device-brand-logo" class="device-logo-image" alt="">
+            </div>
+            <div id="device-family-logo-container" class="device-logo-container" hidden>
+              <img id="device-family-logo" class="device-logo-image" alt="">
+            </div>
+          </div>
+          <p id="device-logo-status" class="device-logo-status" role="status" hidden></p>
+          <div class="art-caption">
+            <span id="device-motto">A little more personal.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="now-section" data-route-page="home" aria-labelledby="now-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Live Hardware Monitor</p>
+            <h2 id="now-title">Right now</h2>
+          </div>
+          <span id="last-updated" class="section-note">Live readings · updated every few seconds</span>
+        </div>
+        <div class="vitals-grid">
+          <article class="vital-card">
+            <div class="vital-heading"><span class="vital-icon vital-icon--cpu" aria-hidden="true">C</span><span>Processor</span></div>
+            <p id="system-cpu-value" class="vital-number">--<span>%</span></p>
+            <p class="vital-caption">of your CPU working</p>
+            <div class="meter" role="meter" aria-label="CPU utilization" aria-valuemin="0" aria-valuemax="100">
+              <span id="cpu-meter" class="meter-fill"></span>
+            </div>
+          </article>
+          <article class="vital-card">
+            <div class="vital-heading"><span class="vital-icon vital-icon--memory" aria-hidden="true">M</span><span>Memory</span></div>
+            <p id="memory-used-value" class="vital-number">--<span> GiB</span></p>
+            <p id="memory-caption" class="vital-caption">of -- GiB installed</p>
+            <div class="meter" role="meter" aria-label="Memory utilization" aria-valuemin="0" aria-valuemax="100">
+              <span id="memory-meter" class="meter-fill"></span>
+            </div>
+          </article>
+          <article class="vital-card">
+            <div class="vital-heading"><span class="vital-icon vital-icon--battery" aria-hidden="true">B</span><span>Battery</span></div>
+            <p id="battery-value" class="vital-number">--<span>%</span></p>
+            <p id="battery-caption" class="vital-caption">Checking battery</p>
+            <div class="meter" role="meter" aria-label="Battery charge" aria-valuemin="0" aria-valuemax="100">
+              <span id="battery-meter" class="meter-fill"></span>
+            </div>
+          </article>
+        </div>
+        <div class="cpu-temperature-summary" data-route-page="home">
+          <div>
+            <p class="eyebrow">CPU package temperature</p>
+            <p id="overview-cpu-temperature" class="cpu-temperature-value" role="status" aria-live="polite">
+              Checking sensor availability…
+            </p>
+          </div>
+          <a href="#sensors">View sensor details</a>
+        </div>
+        <details class="graph-settings">
+          <summary>Customize live graphs</summary>
+          <div class="graph-settings-content">
+            <p>Choose which metrics to display and set a color for each graph series. Preferences are saved in this browser.</p>
+            <div id="graph-settings-list" class="graph-settings-list"></div>
+            <button id="reset-graph-settings" class="graph-reset-button" type="button">Reset graphs</button>
+          </div>
+        </details>
+        <div class="monitor-grid" aria-label="Live usage over the last 60 seconds">
+          <article id="cpu-monitor-card" class="monitor-card">
+            <div class="monitor-heading">
+              <div>
+                <h3>Processor</h3>
+                <p>Utilization · last 60 seconds</p>
+              </div>
+              <span class="monitor-current"><span class="monitor-live-dot"></span><span id="cpu-chart-current">--%</span></span>
+            </div>
+            <svg class="monitor-chart" viewBox="0 0 640 168" role="img" aria-label="CPU utilization history, last 60 seconds">
+              <path class="monitor-grid-lines" d="M24 20H616M24 52H616M24 84H616M24 116H616M24 148H616M24 20V148M73.3 20V148M122.7 20V148M172 20V148M221.3 20V148M270.7 20V148M320 20V148M369.3 20V148M418.7 20V148M468 20V148M517.3 20V148M566.7 20V148M616 20V148"/>
+              <path id="cpu-chart-area" class="monitor-chart-area monitor-chart-area--cpu" d=""/>
+              <path id="cpu-chart-line" class="monitor-chart-line monitor-chart-line--cpu" d=""/>
+            </svg>
+            <div class="monitor-axis"><span>60 seconds ago</span><span>Now</span></div>
+            <div id="cpu-chart-stats"></div>
+            <p id="cpu-chart-explanation" class="monitor-explanation"></p>
+          </article>
+          <article id="memory-monitor-card" class="monitor-card">
+            <div class="monitor-heading">
+              <div>
+                <h3>Memory</h3>
+                <p>In use · last 60 seconds</p>
+              </div>
+              <span class="monitor-current"><span class="monitor-live-dot monitor-live-dot--memory"></span><span id="memory-chart-current">--%</span></span>
+            </div>
+            <svg class="monitor-chart" viewBox="0 0 640 168" role="img" aria-label="Memory usage history, last 60 seconds">
+              <path class="monitor-grid-lines" d="M24 20H616M24 52H616M24 84H616M24 116H616M24 148H616M24 20V148M73.3 20V148M122.7 20V148M172 20V148M221.3 20V148M270.7 20V148M320 20V148M369.3 20V148M418.7 20V148M468 20V148M517.3 20V148M566.7 20V148M616 20V148"/>
+              <path id="memory-chart-area" class="monitor-chart-area monitor-chart-area--memory" d=""/>
+              <path id="memory-chart-line" class="monitor-chart-line monitor-chart-line--memory" d=""/>
+            </svg>
+            <div class="monitor-axis"><span>60 seconds ago</span><span>Now</span></div>
+            <p class="memory-composition-label">Memory composition</p>
+            <div class="memory-composition" role="img" aria-label="Current memory in use and available">
+              <span id="memory-composition-used" class="memory-composition-used"></span>
+            </div>
+            <div class="memory-composition-key">
+              <span id="memory-composition-used-label">In use -- GiB</span>
+              <span id="memory-composition-available-label">Available -- GiB</span>
+            </div>
+            <div id="memory-chart-stats"></div>
+            <p id="memory-chart-explanation" class="monitor-explanation"></p>
+          </article>
+          <article id="disk-monitor-card" class="monitor-card">
+            <div class="monitor-heading">
+              <div><h3>Disk</h3><p>Read and write · last 60 seconds</p></div>
+              <span id="disk-chart-current" class="monitor-current">Waiting for sample</span>
+            </div>
+            <svg class="monitor-chart" viewBox="0 0 640 168" role="img" aria-label="Disk read and write history, last 60 seconds">
+              <path class="monitor-grid-lines" d="M24 20H616M24 52H616M24 84H616M24 116H616M24 148H616M24 20V148M73.3 20V148M122.7 20V148M172 20V148M221.3 20V148M270.7 20V148M320 20V148M369.3 20V148M418.7 20V148M468 20V148M517.3 20V148M566.7 20V148M616 20V148"/>
+              <path id="disk-read-area" class="monitor-chart-area monitor-chart-area--disk-read" d=""/>
+              <path id="disk-read-line" class="monitor-chart-line monitor-chart-line--disk-read" d=""/>
+              <path id="disk-write-area" class="monitor-chart-area monitor-chart-area--disk-write" d=""/>
+              <path id="disk-write-line" class="monitor-chart-line monitor-chart-line--disk-write" d=""/>
+            </svg>
+            <div class="monitor-axis"><span>60 seconds ago</span><span>Now</span></div>
+            <div id="disk-chart-stats"></div>
+            <p id="disk-chart-explanation" class="monitor-explanation"></p>
+          </article>
+          <article id="network-monitor-card" class="monitor-card">
+            <div class="monitor-heading">
+              <div><h3>Network</h3><p>Receive and send · last 60 seconds</p></div>
+              <span id="network-chart-current" class="monitor-current">Waiting for sample</span>
+            </div>
+            <svg class="monitor-chart" viewBox="0 0 640 168" role="img" aria-label="Network receive and send history, last 60 seconds">
+              <path class="monitor-grid-lines" d="M24 20H616M24 52H616M24 84H616M24 116H616M24 148H616M24 20V148M73.3 20V148M122.7 20V148M172 20V148M221.3 20V148M270.7 20V148M320 20V148M369.3 20V148M418.7 20V148M468 20V148M517.3 20V148M566.7 20V148M616 20V148"/>
+              <path id="network-receive-area" class="monitor-chart-area monitor-chart-area--network-receive" d=""/>
+              <path id="network-receive-line" class="monitor-chart-line monitor-chart-line--network-receive" d=""/>
+              <path id="network-send-area" class="monitor-chart-area monitor-chart-area--network-send" d=""/>
+              <path id="network-send-line" class="monitor-chart-line monitor-chart-line--network-send" d=""/>
+            </svg>
+            <div class="monitor-axis"><span>60 seconds ago</span><span>Now</span></div>
+            <div id="network-chart-stats"></div>
+            <p id="network-chart-explanation" class="monitor-explanation"></p>
+          </article>
+          <article id="gpu-monitor-card" class="monitor-card">
+            <div class="monitor-heading">
+              <div><h3>GPU 3D</h3><p>Engine utilization · last 60 seconds</p></div>
+              <span class="monitor-current"><span class="monitor-live-dot monitor-live-dot--gpu"></span><span id="gpu-chart-current">--%</span></span>
+            </div>
+            <svg class="monitor-chart" viewBox="0 0 640 168" role="img" aria-label="GPU 3D engine utilization history, last 60 seconds">
+              <path class="monitor-grid-lines" d="M24 20H616M24 52H616M24 84H616M24 116H616M24 148H616M24 20V148M73.3 20V148M122.7 20V148M172 20V148M221.3 20V148M270.7 20V148M320 20V148M369.3 20V148M418.7 20V148M468 20V148M517.3 20V148M566.7 20V148M616 20V148"/>
+              <path id="gpu-chart-area" class="monitor-chart-area monitor-chart-area--gpu" d=""/>
+              <path id="gpu-chart-line" class="monitor-chart-line monitor-chart-line--gpu" d=""/>
+            </svg>
+            <div class="monitor-axis"><span>60 seconds ago</span><span>Now</span></div>
+            <div id="gpu-chart-stats"></div>
+            <p id="gpu-chart-explanation" class="monitor-explanation"></p>
+          </article>
+        </div>
+      </section>
+
+      <section class="profile-section" data-route-page="home" aria-labelledby="profile-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Hardware Information</p>
+            <h2 id="profile-title">Hardware profile</h2>
+          </div>
+          <span class="profile-note">Windows specifications refresh asynchronously · live sensors update every few seconds</span>
+        </div>
+        <div class="profile-card">
+          <article class="profile-row">
+            <span class="profile-icon" aria-hidden="true">01</span>
+            <div class="profile-copy"><h3>Processor</h3><p id="core-details">Detecting cores</p></div>
+            <p id="processor-value" class="profile-reading">Detecting processor</p>
+          </article>
+          <article class="profile-row">
+            <span class="profile-icon" aria-hidden="true">02</span>
+            <div class="profile-copy"><h3>Graphics</h3><p>Display adapter</p></div>
+            <p id="graphics-value" class="profile-reading">Detecting graphics</p>
+          </article>
+          <article class="profile-row">
+            <span class="profile-icon" aria-hidden="true">03</span>
+            <div class="profile-copy"><h3>System</h3><p id="os-details">Operating system and architecture</p></div>
+            <p id="os-value" class="profile-reading">Detecting system</p>
+          </article>
+          <article class="profile-row">
+            <span class="profile-icon" aria-hidden="true">04</span>
+            <div class="profile-copy"><h3>Storage</h3><p id="drive-details">System drive</p></div>
+            <p id="drive-value" class="profile-reading">Detecting storage</p>
+          </article>
+          <article class="profile-row">
+            <span class="profile-icon" aria-hidden="true">05</span>
+            <div class="profile-copy"><h3>Firmware</h3><p>BIOS version</p></div>
+            <p id="bios-value" class="profile-reading">Detecting firmware</p>
+          </article>
+        </div>
+        <div id="hardware-details-grid" class="hardware-details-grid" aria-label="Detailed hardware information"></div>
+        <p id="hardware-inventory-status" class="hardware-inventory-status" role="status" aria-live="polite">
+          Reading extended hardware information from this device.
+        </p>
+      </section>
+
+      <p id="status-message" class="status-message" data-route-page="home" role="status" aria-live="polite">Looking for your device details.</p>
+
+      <section id="sensors-page" class="sensors-page" data-route-page="sensors" aria-labelledby="sensors-title" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Live sensor discovery</p>
+            <h1 id="sensors-title">Sensors</h1>
+          </div>
+          <div class="sensor-session">
+            <span id="sensor-session-duration">Session 00:00</span>
+            <button id="sensor-pause-toggle" class="sensor-control-button" type="button">Pause monitoring</button>
+          </div>
+        </div>
+        <p id="sensors-status" class="sensor-status" role="status" aria-live="polite">Loading discovered sensors…</p>
+        <section id="lhm-setup" class="sensor-setup-card" aria-labelledby="lhm-setup-title" hidden>
+          <h2 id="lhm-setup-title">Enable CPU temperature and power sensors</h2>
+          <ol>
+            <li>Download LibreHardwareMonitor from its <a href="https://github.com/LibreHardwareMonitor/LibreHardwareMonitor/releases" target="_blank" rel="noreferrer">official GitHub releases</a>.</li>
+            <li>Run LibreHardwareMonitor as Administrator.</li>
+            <li>Choose <strong>Options → Remote Web Server → Run</strong> and keep it on port 8085.</li>
+          </ol>
+          <p>OVERPINE connects only to <code>127.0.0.1:8085</code>. Sensors not exposed by the hardware or driver remain unavailable.</p>
+        </section>
+        <div class="sensor-filters" aria-label="Sensor filters">
+          <label>Category
+            <select id="sensor-category-filter">
+              <option value="">All categories</option>
+              <option value="cpu">CPU</option>
+              <option value="gpu">GPU</option>
+              <option value="memory">Memory</option>
+              <option value="storage">Storage</option>
+              <option value="battery">Battery</option>
+              <option value="thermal">Thermal</option>
+              <option value="fan">Fan</option>
+              <option value="power">Power</option>
+              <option value="network">Network</option>
+            </select>
+          </label>
+          <label>State
+            <select id="sensor-state-filter">
+              <option value="">All states</option>
+              <option value="AVAILABLE">Available</option>
+              <option value="UNAVAILABLE">Unavailable</option>
+              <option value="UNSUPPORTED">Unsupported</option>
+              <option value="PERMISSION_RESTRICTED">Needs admin</option>
+              <option value="TEMPORARILY_DISCONNECTED">Disconnected</option>
+              <option value="ERROR">Error</option>
+              <option value="NOT_INITIALIZED">Not initialized</option>
+            </select>
+          </label>
+        </div>
+        <div id="sensor-groups" class="sensor-groups"></div>
+        <section id="sensor-history-panel" class="sensor-history-panel" aria-labelledby="sensor-history-title" hidden>
+          <div class="sensor-history-heading">
+            <div>
+              <h2 id="sensor-history-title">Sensor history</h2>
+              <p id="sensor-history-detail" class="sensor-subtle"></p>
+            </div>
+            <button id="sensor-history-close" class="sensor-control-button" type="button">Close chart</button>
+          </div>
+          <p id="sensor-history-status" class="sensor-subtle" role="status" aria-live="polite"></p>
+          <div class="sensor-chart-wrap">
+            <canvas id="sensor-history-chart" aria-label="Selected sensor measurement history" role="img"></canvas>
+          </div>
+        </section>
+      </section>
+
+      <section id="stress-page" class="stress-page" data-route-page="stress" aria-labelledby="stress-title" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Local workload controls</p>
+            <h1 id="stress-title">Stress test</h1>
+          </div>
+          <span class="section-note">All workloads stay on this device</span>
+        </div>
+
+        <p class="stress-warning" role="note">This will push your laptop to high load. Plug in the charger and save your work.</p>
+        <p id="stress-message" class="stress-message" role="status" aria-live="polite">Loading stress-test status…</p>
+
+        <form id="stress-form" class="stress-panel">
+          <fieldset id="stress-targets" class="stress-targets">
+            <legend>Components</legend>
+            <label class="stress-option stress-option--all">
+              <input id="stress-all" type="checkbox">
+              <span>All supported components</span>
+            </label>
+            <div class="stress-options">
+              <label class="stress-option"><input name="stress-target" type="checkbox" value="cpu" checked><span>CPU</span></label>
+              <label class="stress-option"><input name="stress-target" type="checkbox" value="memory"><span>Memory</span></label>
+              <label class="stress-option"><input name="stress-target" type="checkbox" value="disk"><span>Disk</span></label>
+              <label class="stress-option"><input name="stress-target" type="checkbox" value="network"><span>Network</span></label>
+              <label class="stress-option"><input name="stress-target" type="checkbox" value="gpu"><span>GPU <small>Unsupported</small></span></label>
+            </div>
+          </fieldset>
+
+          <div class="stress-settings">
+            <label class="stress-field" for="stress-duration">
+              Duration
+              <span><input id="stress-duration" type="number" min="5" max="300" step="1" value="10"> seconds</span>
+            </label>
+            <label class="stress-field" for="stress-intensity">
+              Intensity
+              <span><output id="stress-intensity-value" for="stress-intensity">10%</output></span>
+              <input id="stress-intensity" type="range" min="10" max="100" step="1" value="10">
+            </label>
+          </div>
+
+          <div class="stress-controls">
+            <button id="stress-start" class="stress-start-button" type="submit">Start stress test</button>
+            <button id="stress-stop" class="stress-stop-button" type="button" hidden>Stop test</button>
+          </div>
+        </form>
+
+        <section id="stress-run" class="stress-panel" aria-labelledby="stress-run-title" hidden>
+          <div class="stress-run-heading">
+            <div>
+              <h2 id="stress-run-title">Run progress</h2>
+              <p id="stress-run-time">Waiting for run details</p>
+            </div>
+            <span id="stress-run-state" class="stress-state-badge">Idle</span>
+          </div>
+          <progress id="stress-progress" max="100" value="0">0%</progress>
+          <p id="stress-abort-reason" class="stress-abort-reason" role="alert" hidden></p>
+          <p id="stress-temperature" class="stress-subtle"></p>
+          <div id="stress-target-status" class="stress-target-status" aria-label="Component status"></div>
+          <p id="stress-metric-error" class="stress-subtle" role="status" hidden></p>
+        </section>
+
+        <section id="stress-chart-panel" class="stress-panel" aria-labelledby="stress-chart-title">
+          <div class="stress-run-heading">
+            <div>
+              <h2 id="stress-chart-title">Live metrics</h2>
+              <p>System readings sampled once per second</p>
+            </div>
+            <span id="stress-chart-state" class="stress-subtle">Chart loads when this page opens</span>
+          </div>
+          <div class="stress-chart-wrap">
+            <canvas id="stress-chart" aria-label="Live CPU, memory, disk, and network metrics" role="img"></canvas>
+          </div>
+        </section>
+
+        <section id="stress-results" class="stress-panel" aria-labelledby="stress-results-title" hidden>
+          <h2 id="stress-results-title">Last run summary</h2>
+          <p id="stress-results-note" class="stress-subtle"></p>
+          <div id="stress-results-table" class="stress-results-table"></div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Made for your machine <span class="footer-spark" aria-hidden="true">✳</span></span>
+      <a href="/docs">Local API</a>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+# OVERPINE - Phase 3 dependencies
+# Install with: pip install -r requirements.txt
+
+fastapi>=0.110        # web framework (REST + WebSocket + OpenAPI docs)
+uvicorn>=0.29         # ASGI server that runs FastAPI
+psutil>=5.9           # process/system metrics (used for /health self-metrics now)
+
+# Testing
+pytest>=8.0
+httpx>=0.27           # required by FastAPI's TestClient

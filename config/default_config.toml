@@ -1,0 +1,35 @@
+# OVERPINE default configuration (Phase 2)
+# Security: host must stay 127.0.0.1 (local only).
+
+[server]
+host = "127.0.0.1"
+port = 8000
+
+[logging]
+level = "INFO"          # DEBUG, INFO, WARNING, ERROR
+file = "logs/overpine.log"
+
+[monitoring]
+history_size = 3600
+simulation = false
+
+[monitoring.intervals]
+cpu = 1.0
+memory = 2.0
+storage = 5.0
+battery = 5.0
+thermal = 2.0
+fan = 2.0
+power = 2.0
+gpu = 10.0
+network = 1.0
+windows = 10.0
+
+[lhm]
+enabled = true
+host = "127.0.0.1"
+port = 8085
+timeout_s = 2.0
+
+[smart]
+enabled = false
