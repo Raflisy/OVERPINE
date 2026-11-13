@@ -238,13 +238,18 @@ class PdhProvider(SensorProvider):
             try:
                 sample = self._session.counter_sample(binding.handle)
             except OSError as error:
-                state = (
-                    SensorState.UNSUPPORTED
-                    if isinstance(error, PdhStatusError)
-                    and error.state == "object or counter does not exist"
-                    else SensorState.ERROR
-                )
-                self._states[binding.sensor_id] = (state, str(error))
+                if binding.instance.casefold().startswith("pid_"):
+                    state = SensorState.TEMPORARILY_DISCONNECTED
+                    message = "Process ended; its counter instance is gone"
+                else:
+                    state = (
+                        SensorState.UNSUPPORTED
+                        if isinstance(error, PdhStatusError)
+                        and error.state == "object or counter does not exist"
+                        else SensorState.ERROR
+                    )
+                    message = str(error)
+                self._states[binding.sensor_id] = (state, message)
                 sampled[binding.sensor_id] = None
                 self._diagnostics[binding.sensor_id] = (
                     binding.path,

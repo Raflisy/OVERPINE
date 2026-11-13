@@ -1,5 +1,6 @@
 """Token-protected user settings API."""
 from __future__ import annotations
+from backend.storage.history import is_detail_sensor
 
 import secrets
 from typing import cast
@@ -56,7 +57,12 @@ def _response(
     values: UserSettings,
 ) -> dict[str, object]:
     """Build the public settings shape and current sensor choices."""
-    sensors = request.app.monitoring_scheduler.registry.list()
+    selected = set(values["recorded_sensors"])
+    sensors = [
+        sensor  
+        for sensor in request.app.monitoring_scheduler.registry.list()
+        if not is_detail_sensor(sensor.id) or sensor.id in selected
+    ]
     available_sensors: list[dict[str, str]] = [
         {
             "id": sensor.id,

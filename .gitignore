@@ -19,3 +19,9 @@ node_modules/
 .env.*
 .DS_Store
 /overpine/
+
+data/*.bak*
+data/*.db-*
+data/settings.json
+*.zip
+overpine.lock

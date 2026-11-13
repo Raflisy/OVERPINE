@@ -50,9 +50,10 @@ export function initializeHelpPage() {
         const explanation = sensor.error_message
           || stateExplanations[sensor.state]
           || `Reported state: ${sensor.state}`;
-        item.textContent =
-          `${sensor.name} (${sensor.id}) · ${sensor.state}: ${explanation}`;
-        list.append(item);
+                item.textContent = explanation.includes("allow_external_programs")
+          ? `${sensor.name} (${sensor.id}) · disabled by your setting (windows_tools.allow_external_programs), not a hardware limit`
+          : `${sensor.name} (${sensor.id}) · ${sensor.state}: ${explanation}`;
+          list.append(item);
       }
       status.textContent = unavailable.length
         ? `${unavailable.length} currently discovered sensor(s) are not available.`

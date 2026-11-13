@@ -36,6 +36,8 @@ _DETAIL_SENSOR_PREFIXES = (
     "thermal.passive-limit.",
     "thermal.temperature.",
     "thermal.throttle-reasons.",
+    "gpu.gpu-utilization.",
+    "gpu.gpu-memory.",
 )
 
 
@@ -900,6 +902,8 @@ def _is_detail_sensor(sensor_id: str) -> bool:
         or normalized.startswith(_DETAIL_SENSOR_PREFIXES)
     )
 
+
+is_detail_sensor = _is_detail_sensor
 
 def _should_record(previous: HistorySample, sample: HistorySample) -> bool:
     """Store meaningful changes, state transitions, or a ten-second heartbeat."""
