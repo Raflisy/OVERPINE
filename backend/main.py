@@ -25,6 +25,19 @@ from backend.core.config import (
     Settings,
     load_settings,
 )
+from backend.api.routes import (
+    about,
+    disk_network,
+    health,
+    diagnostics,
+)
+from backend.api.routes import (
+    about,
+    diagnostics,
+    disk_network,
+    health,
+)
+
 from backend.core.logging_setup import setup_logging
 from backend.core.paths import ensure_user_directories
 from backend.core.user_settings import SettingsStore

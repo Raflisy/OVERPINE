@@ -5,6 +5,7 @@ import { initializeAboutPage } from "./pages/about.js";
 import { initializeSettingsPage } from "./pages/settings.js";
 import { initializeHelpPage } from "./pages/help.js";
 import { initializeDiagnosticsPage } from "./pages/diagnostics.js";
+import { initializeDiagnosticsPage } from "./pages/diagnostics.js";
 initializeDiagnosticsPage();
 import { LineChart } from "./charts/line-chart.js";
 

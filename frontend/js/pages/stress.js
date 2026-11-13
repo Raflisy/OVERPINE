@@ -66,6 +66,7 @@ function initializeStressPage() {
       "sensors",
       "history",
       "about",
+      "diagnostics",
       "settings",
       "help",
     ].includes(route) ? route : "home";
