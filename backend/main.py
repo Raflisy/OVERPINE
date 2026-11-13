@@ -120,6 +120,8 @@ class Application:
             ("POST", "/api/v1/heartbeat", health.heartbeat, None),
             ("GET", "/api/v1/system", system.system_info, None),
             ("GET", "/api/v1/device-note", system.device_note, None),
+            ("GET", "/api/logs", diagnostics.get_logs, None),
+            ("GET", "/api/diagnostics", diagnostics.get_diagnostics, None),
             (
                 "GET",
                 "/api/v1/settings/online-lookups",

@@ -4,6 +4,8 @@ import { initializeHistoryPage } from "./pages/history.js";
 import { initializeAboutPage } from "./pages/about.js";
 import { initializeSettingsPage } from "./pages/settings.js";
 import { initializeHelpPage } from "./pages/help.js";
+import { initializeDiagnosticsPage } from "./pages/diagnostics.js";
+initializeDiagnosticsPage();
 import { LineChart } from "./charts/line-chart.js";
 
 const themeStorageKey = "overpine-theme";
