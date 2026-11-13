@@ -1,0 +1,2 @@
+-r requirements.txt
+# Desktop window and executable packaging are paused until Step 6 and the lecturer's answer about PyInstaller.

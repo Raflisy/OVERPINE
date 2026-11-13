@@ -1,0 +1,62 @@
+# OVERPINE default configuration (Phase 2)
+# Security: host must stay 127.0.0.1 (local only).
+
+[server]
+host = "127.0.0.1"
+port = 8000
+
+[logging]
+level = "INFO"          # DEBUG, INFO, WARNING, ERROR
+file = "logs/overpine.log"
+
+[monitoring]
+history_size = 3600
+
+[history]
+enabled = true
+retention_days = 7
+max_mb = 100
+record_sensors = [
+  "cpu.total",
+  "cpu.frequency.current",
+  "cpu.frequency.max",
+  "cpu.throttling.estimated",
+  "memory.used",
+  "storage.disk.read",
+  "storage.disk.write",
+  "network.receive",
+  "network.send",
+  "battery.charge",
+  "battery.power_plugged",
+  "battery.seconds_left",
+  "battery.voltage",
+  "gpu.3d.utilization",
+  "thermal.wmi.acpi-zone.0",
+  "storage.temperature.disk0.sensor0",
+]
+
+[interface]
+refresh_interval_seconds = 3
+theme = "dark"
+
+[privacy]
+online_device_fact_lookup = false
+
+[about]
+credits = ""
+course_university = ""
+
+[monitoring.intervals]
+cpu = 1.0
+memory = 2.0
+storage = 5.0
+battery = 5.0
+thermal = 2.0
+fan = 2.0
+power = 2.0
+gpu = 10.0
+network = 1.0
+windows = 10.0
+
+[windows_tools]
+allow_external_programs = false
