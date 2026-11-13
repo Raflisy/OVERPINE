@@ -2,9 +2,25 @@
 
 Local hardware monitoring platform with a standard-library HTTP server and browser dashboard.
 Version: **0.5.0**
-Status: **Phase 3: local device dashboard.** The dashboard identifies the computer using locally reported manufacturer and model data, and detects the processor, graphics adapters, displays, audio/network devices, memory, battery, system drive, firmware, and operating system. Live telemetry includes CPU, memory, disk and network throughput, GPU 3D-engine utilization when Windows exposes it, and battery sensors when available.
+Status: **Working prototype.** Sensor discovery and monitoring, persistent history, About / Settings / Help and Diagnostics pages are implemented. The desktop window and `.exe` build are paused. The dashboard identifies the computer using locally reported manufacturer and model data, and detects the processor, graphics adapters, displays, audio/network devices, memory, battery, system drive, firmware, and operating system. Live telemetry includes CPU, memory, disk and network throughput, GPU 3D-engine utilization when Windows exposes it, and battery sensors when available.
 
 The interface supports light and dark themes, remembers the selected theme in the local settings file, and uses a minimal system-font stack without external font downloads.
+
+## Requirements
+
+- Windows 10 or 11.
+- Python 3.11 or newer (the configuration is read with `tomllib`). Developed and tested with Python 3.14.
+- Nothing to install: no third-party Python packages are used (see below).
+
+## No third-party libraries
+
+The project follows the course rule of using the Python standard library only. The web server, routing, security checks, Windows readings (`ctypes`), SQLite history (`sqlite3`), tests (`unittest`) and the canvas charts are written in this project. Check it yourself:
+
+```powershell
+python tools\check_imports.py
+```
+
+The About page runs the same check live.
 
 ## Run (PowerShell, from this folder)
 
@@ -31,6 +47,8 @@ Open the printed local URL. API documentation is in [docs/api.md](docs/api.md); 
 ```powershell
 python -m unittest discover
 ```
+
+141 tests passed on the author's laptop on 2026-11-13. Tests use temporary data folders and never touch the real `data/` folder. A few tests exercise Windows-only features and cannot pass on other operating systems.
 
 ## Stress test
 
@@ -105,12 +123,25 @@ are documented in [docs/api.md](docs/api.md#about-and-application-settings).
 
 Native battery-class IOCTL readings, storage-device temperature properties, and English PDH counters are probed at runtime. Unsupported, restricted, and not-yet-sampled sensors remain null with explicit states. The thermal-zone counter is firmware-reported and is not CPU-core temperature; fan RPM is reported unsupported without launching a program. PDH counter units are accepted only when Windows provides an explanation. See [docs/sensor-sources.md](docs/sensor-sources.md).
 
-External Windows programs are disabled by default with `[windows_tools] allow_external_programs = false`. The diagnosis command can include counter/API paths and recorded error codes:
+`[windows_tools] allow_external_programs = false` (the default) only controls the optional WMI thermal-zone provider. **The hardware inventory service (`backend/services/hardware_inventory.py`) separately starts Windows PowerShell (`Get-CimInstance`) every few minutes for the device inventory and about every 10 seconds for live GPU and battery values, and that service is not switched off by this setting.** See "Known limits". The diagnosis command can include counter/API paths and recorded error codes:
 
 ```powershell
 python -m backend.diagnose
 python -m backend.diagnose --verbose
 ```
+
+## Diagnostics
+
+The Diagnostics page (top navigation) is read-only. It shows the Python, Windows and application versions, the number of sensors in each state, provider status and last errors, the sensors that currently have no reading with the reason, history database health, and the application log with a minimum-level filter, text search, and copy buttons. **Copy report** puts a plain-text summary on the clipboard. Per-process and per-counter detail sensors (hundreds of rows) are counted separately and are not listed. See [the Logs and diagnostics API](docs/api.md#logs-and-diagnostics).
+
+## Known limits
+
+- **PowerShell use.** The hardware inventory service runs `powershell.exe` for device inventory and a live GPU/battery query. On the author's laptop the 10-second live query often times out and is logged repeatedly. Whether PowerShell/CIM is allowed under the course rule has not been confirmed with the lecturer.
+- **No kernel driver, no CPU register access.** Exact core temperature, package power and fan RPM are not promised. Fan RPM is reported unsupported on the test laptop.
+- **CPU throttling estimate** can stay unavailable (`GetSystemTimes has not produced two meaningful samples`); this is being investigated.
+- **windows-counter provider** logs a timeout roughly every four minutes on the test laptop.
+- **The desktop window and `.exe`** are paused until the lecturer answers about PyInstaller. `overpine.spec`, `build-exe.ps1` and `requirements-desktop.txt` exist but do not build anything yet.
+- The Windows-only parts have been run on one laptop (Lenovo ThinkPad L13 Yoga Gen 2, Windows 11). Other hardware may expose different sensors.
 
 ## Folders
 
@@ -119,8 +150,9 @@ python -m backend.diagnose --verbose
 | backend/ | Python backend (API, providers, monitoring, diagnostics, db) |
 | frontend/ | Browser UI |
 | config/ | default_config.toml |
-| helper/ | Elevated sensor helper (later phase) |
+| helper/ | Reserved for an elevated sensor helper (empty) |
 | tests/ | standard-library unittest tests |
+| tools/ | check_imports.py (third-party import check) |
 | docs/ | Documentation |
 | data/ | SQLite DB and exports |
 | logs/ | Log files |
@@ -136,4 +168,4 @@ python -m backend.diagnose --verbose
 - Disk/network rates are calculated from successive local OS counters. GPU engine use and battery power details are read from Windows performance/WMI providers when present; no third-party telemetry service is used.
 - An optional, off-by-default device fact lookup, plus an original device motto and clear OVERPINE attribution. When enabled, only the detected manufacturer and model are used for the lookup; the computer name and serial number are not sent.
 - Light/dark theme toggle with saved preference.
-- Temperature sensors still need an additional hardware-specific provider.
+- Temperature: only values Windows itself exposes are shown (for example a firmware-reported thermal-zone counter, or a drive temperature when the drive reports it). Missing temperatures stay unavailable; nothing is estimated.
