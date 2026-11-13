@@ -161,11 +161,11 @@ class _RequestHandler(BaseHTTPRequestHandler):
             response = json_response(exc.as_dict(), exc.status, headers)
             try:
                 self._send_response(response, head=self.command == "HEAD")
-            except (BrokenPipeError, ConnectionResetError):
+            except ConnectionError:
                 status = 499
             else:
                 status = exc.status
-        except (BrokenPipeError, ConnectionResetError):
+        except ConnectionError:
             status = 499
         except Exception:
             _LOG.exception(
@@ -179,7 +179,7 @@ class _RequestHandler(BaseHTTPRequestHandler):
             )
             try:
                 self._send_response(response, head=self.command == "HEAD")
-            except (BrokenPipeError, ConnectionResetError):
+            except ConnectionError:
                 status = 499
             else:
                 status = 500

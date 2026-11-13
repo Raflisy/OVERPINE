@@ -480,7 +480,55 @@
           <p id="settings-restart-note" class="info-subtle" role="status"></p>
         </form>
       </section>
-
+      <section id="diagnostics-page" class="info-page" data-route-page="diagnostics" aria-labelledby="diagnostics-title" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Local checks</p>
+            <h1 id="diagnostics-title">Diagnostics</h1>
+          </div>
+        </div>
+        <p id="diagnostics-status" class="info-status" role="status" aria-live="polite">Loading diagnostics…</p>
+        <div class="history-controls">
+          <button id="diagnostics-refresh" class="sensor-control-button" type="button">Refresh</button>
+          <button id="diagnostics-copy-report" class="sensor-control-button" type="button">Copy report</button>
+        </div>
+        <section class="info-panel">
+          <h2>Sensor summary</h2>
+          <dl id="diagnostics-counts" class="info-list"></dl>
+        </section>
+        <section class="info-panel">
+          <h2>Providers</h2>
+          <ul id="diagnostics-providers" class="info-list-bullets"></ul>
+        </section>
+        <section class="info-panel">
+          <h2>Sensors that need attention</h2>
+          <p id="diagnostics-problem-note" class="info-subtle"></p>
+          <ul id="diagnostics-problems" class="info-list-bullets"></ul>
+        </section>
+        <section class="info-panel">
+          <h2>History database and log file</h2>
+          <dl id="diagnostics-history" class="info-list"></dl>
+        </section>
+        <section class="info-panel">
+          <h2>Application log</h2>
+          <div class="history-controls">
+            <label for="log-level">Minimum level
+              <select id="log-level">
+                <option value="DEBUG">Debug</option>
+                <option value="INFO" selected>Info</option>
+                <option value="WARNING">Warning</option>
+                <option value="ERROR">Error</option>
+              </select>
+            </label>
+            <label for="log-search">Search
+              <input id="log-search" type="search" maxlength="100" autocomplete="off">
+            </label>
+            <button id="log-copy" class="sensor-control-button" type="button">Copy shown log</button>
+          </div>
+          <p id="log-status" class="info-subtle" role="status"></p>
+          <pre id="log-output" class="log-output" tabindex="0"></pre>
+        </section>
+      </section>
       <section id="help-page" class="info-page" data-route-page="help" aria-labelledby="help-title" hidden>
         <div class="section-heading">
           <div>
