@@ -43,8 +43,8 @@ theme = "dark"
 online_device_fact_lookup = false
 
 [about]
-credits = ""
-course_university = ""
+credits = "Raflayyyy"
+course_university = "Politeknik Manufaktur Bandung"
 
 [monitoring.intervals]
 cpu = 1.0

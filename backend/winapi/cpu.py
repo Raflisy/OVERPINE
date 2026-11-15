@@ -36,6 +36,8 @@ _POWER_INFORMATION_PROCESSOR = 11
 _ERROR_INSUFFICIENT_BUFFER = 122
 _cpu_lock = threading.RLock()
 _previous_system_times: tuple[int, int, int, float] | None = None
+_last_cpu_percent: tuple[float, float] | None = None
+_MAX_SHARED_CPU_AGE_S = 5.0
 _processor_query: PdhSession | None = None
 _processor_values: list[tuple[str, HANDLE]] = []
 _frequency_query: PdhSession | None = None
@@ -133,9 +135,23 @@ def _get_system_times(kernel32: Any) -> tuple[int, int, int]:
     )
 
 
+def _recent_cpu_percent(now: float) -> float | None:
+    """Return the last real measurement if it is recent; call with the lock held."""
+    if _last_cpu_percent is None:
+        return None
+    value, measured_at = _last_cpu_percent
+    age = now - measured_at
+    return value if 0 <= age <= _MAX_SHARED_CPU_AGE_S else None
+
+
 def system_cpu_percent() -> float | None:
-    """Return total busy time percent over an interval of at least one second."""
-    global _previous_system_times
+    """Return total busy time percent over an interval of at least one second.
+
+    Several parts of the app ask for this value. A call made less than one second
+    after the previous measurement returns that last real measurement (at most
+    five seconds old) instead of nothing, so one caller cannot starve another.
+    """
+    global _previous_system_times, _last_cpu_percent
     kernel32 = load_library("kernel32")
     if kernel32 is None:
         return None
@@ -149,14 +165,17 @@ def system_cpu_percent() -> float | None:
         previous_idle, previous_kernel, previous_user, previous_at = previous
         elapsed = sampled_at - previous_at
         if elapsed < _MIN_CPU_SAMPLE_INTERVAL_S:
-            return None
+            return _recent_cpu_percent(sampled_at)
         _previous_system_times = (*current, sampled_at)
     idle_delta = current[0] - previous_idle
     total_delta = current[1] - previous_kernel + current[2] - previous_user
     if idle_delta < 0 or total_delta <= 0 or idle_delta > total_delta:
         return None
     # GetSystemTimes kernel time includes idle; subtract idle once from total.
-    return 100.0 * (total_delta - idle_delta) / total_delta
+    value = 100.0 * (total_delta - idle_delta) / total_delta
+    with _cpu_lock:
+        _last_cpu_percent = (value, sampled_at)
+    return value
 
 
 def active_processor_count() -> int | None:

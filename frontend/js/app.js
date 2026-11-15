@@ -779,8 +779,13 @@ async function updateDeviceNote(system) {
     deviceNoteRetryAt = Date.now() + 300_000;
   }
 }
-
+let cpuTemperatureSensorMissing = false;
 async function updateOverviewCpuTemperature() {
+    if (cpuTemperatureSensorMissing) {
+    document.getElementById("overview-cpu-temperature").textContent =
+      "CPU temperature unavailable";
+    return;
+  }
   const temperature = document.getElementById("overview-cpu-temperature");
   temperature.textContent = "Checking sensor availability…";
   temperature.removeAttribute("title");
@@ -789,7 +794,8 @@ async function updateOverviewCpuTemperature() {
       "/api/v1/sensors/cpu.package.temperature",
       { cache: "no-store" },
     );
-    if (response.status === 404) {
+        if (response.status === 404) {
+      cpuTemperatureSensorMissing = true;
       temperature.textContent = "CPU temperature unavailable";
       return;
     }
